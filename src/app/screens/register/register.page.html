@@ -1,0 +1,31 @@
+<div class="centered-container">
+  <div class="container">
+    <div class="heading">Registro de usuario</div>
+
+    <div class="input-container">
+      <div class="input-wrapper">
+        <ion-icon name="person-outline" class="input-icon"></ion-icon>
+        <input class="input" type="text" [(ngModel)]="user.name" id="name" placeholder="Escribe nombre" name="name">
+      </div>
+      <div *ngIf="errors.name" class="invalid-feedback">{{ errors.name }}</div>
+    </div>
+
+    <div class="input-container">
+      <div class="input-wrapper">
+        <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+        <input class="input" type="email" [(ngModel)]="user.email" id="email" placeholder="Email" name="email" [disabled]="editar">
+      </div>
+      <div *ngIf="errors.email" class="invalid-feedback">{{ errors.email }}</div>
+    </div>
+
+    <div class="input-container">
+      <div class="input-wrapper">
+        <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+        <input class="input" type="{{type}}" [(ngModel)]="user.password" id="password" placeholder="Escribe tu contraseña" name="password">
+      </div>
+      <div *ngIf="errors.password" class="invalid-feedback">{{ errors.password }}</div>
+    </div>
+
+    <button class="login-button" type="submit" (click)="registrar()">Registrar</button>
+  </div>
+</div>

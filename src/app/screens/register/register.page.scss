@@ -1,0 +1,98 @@
+/* Contenedor que centra el contenido en la pantalla */
+.centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f0f8ff;
+    padding: 20px;
+  }
+  
+ 
+  
+
+  /* Título del formulario */
+  .heading {
+    text-align: center;
+    font-weight: 900;
+    font-size: 32px;
+    color: #2196F3; /* Color primario */
+    margin-bottom: 80px;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .login-button {
+    display: block;
+    width: 100%;
+    font-weight: bold;
+    background: linear-gradient(45deg, #2196F3 0%, #64B5F6 100%);
+    color: #fff;
+    padding-block: 15px;
+    margin: 20px auto;
+    border-radius: 20px;
+    box-shadow: rgba(33, 150, 243, 0.87) 0px 20px 10px -15px;
+    border: none;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  /* Contenedor de cada input */
+  .input-container {
+    margin-bottom: 20px;
+  }
+  
+  /* Wrapper para agrupar input e ícono */
+  .input-wrapper {
+    position: relative;
+    min-height: 60px; /* Altura fija para mantener la posición de los íconos */
+  }
+  
+  /* Estilo del ícono */
+  .input-icon {
+    position: absolute;
+    left: 15px;
+    top: 40%;
+    transform: translateY(-50%);
+    color: #64B5F6; /* Color secundario */
+    z-index: 1;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  
+  /* Estilo del input */
+  .input {
+    width: 100%;
+    background: #fff;
+    padding: 15px 20px 15px 45px; /* Más padding a la izquierda para dejar espacio al ícono */
+    border-radius: 20px;
+    border: 2px solid #64B5F6; /* Color secundario */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #333;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    transition: all 0.3s ease;
+  }
+  
+  /* Placeholder */
+  .input::placeholder {
+    color: #64B5F6;
+    font-size: 14px;
+  }
+  
+  /* Enfoque del input */
+  .input:focus {
+    outline: none;
+    border-color: #1976D2; /* Color de acento */
+    box-shadow: 0 0 8px rgba(25, 118, 210, 0.5);
+  }
+  
+  /* Mensaje de error */
+  .invalid-feedback {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 5px;
+  }
+  

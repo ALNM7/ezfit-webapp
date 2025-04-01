@@ -1,0 +1,24 @@
+.actions-container {
+    padding: 20px;
+    
+    ion-grid {
+      padding: 0;
+    }
+  }
+  
+  .action-button {
+    --background: #2196F3;
+    --background-hover: #64B5F6;
+    --background-activated: #1976D2;
+    --color: white;
+    --border-radius: 12px;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    margin: 8px;
+    box-shadow: 0 4px 6px rgba(33, 150, 243, 0.2);
+    
+    ion-icon {
+      font-size: 1.2em;
+      margin-right: 8px;
+    }
+  }

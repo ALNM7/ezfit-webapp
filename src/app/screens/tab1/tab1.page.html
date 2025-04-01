@@ -1,0 +1,30 @@
+<ion-content>
+  <div class="actions-container">
+    <ion-grid>
+      <ion-row class="ion-justify-content-center">
+        <!-- Botón Cámara -->
+        <ion-col size="6">
+          <ion-button class="action-button" expand="block" (click)="openCamera()">
+            <ion-icon name="camera-outline" slot="start"></ion-icon>
+            Tomar Foto
+          </ion-button>
+        </ion-col>
+
+        <!-- Botón Upload File -->
+        <ion-col size="6">
+          <input #fileInput type="file" accept="image/*" hidden (change)="handleFileInput($event)">
+          <ion-button class="action-button" expand="block" (click)="openFileSelector()">
+            <ion-icon name="document-outline" slot="start"></ion-icon>
+            Subir Foto
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <!-- Mostrar el nombre del archivo seleccionado -->
+      <ion-row class="ion-justify-content-center" *ngIf="selectedFileName">
+        <ion-col size="12">
+          <p>Archivo seleccionado: {{ selectedFileName }}</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

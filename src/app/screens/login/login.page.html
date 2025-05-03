@@ -1,8 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+</head>
+
+  
+  <div class="main-container">
+    <div class="top">
+      <img src="/assets/images/logo_yellow.JPG" alt="logo-zfit" class="logo">
+      <div class="title">Welcome back!</div>
+    </div>
+  
+    <div class="form">
+          <p class="subtitle">Correo</p>
+          <input class="formulario" type="email" [(ngModel)]="username" id="email" placeholder="Enter your email" name="email">
+
+          <div [class.show]="errors.username" class="invalid-feedback">
+            {{ errors.username }}
+          </div>
+          
+
+          <div class="password"> 
+            <p class="subtitle">Contraseña</p>            
+            <input class="formulario" type="{{type}}" [(ngModel)]="password" id="show-password" 
+                name="password_user" placeholder="Contraseña" (keyup.enter)="login()">
+            <ion-icon 
+                [name]="type === 'password' ? 'eye-outline' : 'eye-off-outline'" 
+                class="password-toggle"
+                (click)="showPassword()">
+            </ion-icon>
+        </div>
+        <div [class.show]="errors.password" class="invalid-feedback">
+          {{ errors.password }}
+        </div>
+
+        <button class="button" type="submit" (click)="login()">Iniciar sesión</button>
+        <span class="register"><a href="register">¿No tienes una cuenta?</a></span>
+      </div>
+      
+   
+
+  </div>
+
+
+
+
+</html>
+
+<!--
+
 <div class="centered-container">
   <div class="container">
     <div class="heading">Inicia Sesion</div>
     <form action="" class="form">
-      <!-- Input de correo -->
+     
       <div class="input-container">
         <div class="input-wrapper">
           <ion-icon name="mail-outline" class="input-icon"></ion-icon>
@@ -11,7 +66,7 @@
         <div *ngIf="errors.username" class="invalid-feedback">{{ errors.username }}</div>
       </div>
       
-      <!-- Input de contraseña -->
+       
       <div class="input-container">
         <div class="input-wrapper">
           <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
@@ -25,9 +80,10 @@
         <div *ngIf="errors.password" class="invalid-feedback">{{ errors.password }}</div>
       </div>
       
-      <!-- Enlace de registro -->
+      
       <span class="forgot-password"><a href="register">Registrate</a></span>
       <button class="login-button" type="submit" (click)="login()">Iniciar sesión</button>
     </form>
   </div>
 </div>
+-->

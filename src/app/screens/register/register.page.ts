@@ -88,6 +88,10 @@ export class RegisterPage implements OnInit {
       this.showPassword = !this.showPassword;
     }
 
+    mostrarpassword() {
+      this.type = this.type === 'password' ? 'text' : 'password';
+    }
+
 
   }
 

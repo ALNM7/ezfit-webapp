@@ -1,17 +1,22 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
+    <ion-title>Detalles del alimento</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+<ion-content>
+  <div *ngIf="foodData">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ foodData.name }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Calorías:</strong> {{ foodData.calories }}</p>
+        <p><strong>Carbohidratos:</strong> {{ foodData.carbohydrates }}</p>
+        <p><strong>Proteínas:</strong> {{ foodData.protein }}</p>
+        <p><strong>Grasas:</strong> {{ foodData.fat }}</p>
+        <!-- Agrega más campos según tu respuesta -->
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

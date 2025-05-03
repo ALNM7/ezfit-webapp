@@ -1,3 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+</head>
+  <div class="container">
+    <div class="titulo">
+      ¡Crea tu Cuenta!
+    </div>
+
+    <div class="form">
+
+      <p class="subtitle">Nombre</p>
+      <input class="formulario" type="text" [(ngModel)]="user.name" id="name" placeholder="Escribe nombre" name="name">
+      <div [class.show]="errors.name" class="invalid-feedback">
+        {{ errors.name }}
+      </div>
+      
+
+
+      <p class="subtitle">Correo</p>
+      <input class="formulario" type="email" [(ngModel)]="user.email" id="email" placeholder="Email" name="email" [disabled]="editar">
+      <div [class.show]="errors.email" class="invalid-feedback">
+        {{ errors.email }}
+      </div>
+
+
+      
+      <div class="passw">
+        <p class="subtitle">Contraseña</p>
+        <input class="formulario" type="{{type}}" [(ngModel)]="user.password" id="password" placeholder="Escribe tu contraseña" name="password">
+        <ion-icon 
+                [name]="type === 'password' ? 'eye-outline' : 'eye-off-outline'" 
+                class="password-toggle"
+                (click)="mostrarpassword()">
+            </ion-icon>
+
+            <div [class.show]="errors.password" class="invalid-feedback">
+              {{ errors.password }}
+            </div>
+
+            <button class="button" type="submit" (click)="registrar()">Registrar</button>
+
+      </div>
+    </div>
+  </div>
+
+</html>
+
+
+
+
+<!--
+
+
 <div class="centered-container">
   <div class="container">
     <div class="heading">Registro de usuario</div>
@@ -29,3 +88,5 @@
     <button class="login-button" type="submit" (click)="registrar()">Registrar</button>
   </div>
 </div>
+
+-->

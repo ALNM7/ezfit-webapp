@@ -1,17 +1,49 @@
-<ion-header [translucent]="true">
+<ion-header translucent>
+
+  <!--
+    
   <ion-toolbar>
-    <ion-title>
-      Tab 2
-    </ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="closeCamera()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Escanear</ion-title>
   </ion-toolbar>
+  -->
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="camera-content" fullscreen>
+  <!-- Vista previa de la cámara -->
+  <div class="camera-container">
+    <video #video autoplay playsinline muted></video>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+    <!-- Cuadro centrado estilo escáner -->
+    <div class="overlay-square"></div>
+
+    <!-- Spinner de carga (se muestra cuando isLoading es true) -->
+    <ion-item *ngIf="isLoading" class="loading-container">
+      <ion-label>Cargando</ion-label>
+      <ion-spinner name="dots"></ion-spinner>
+    </ion-item>
+      <div class="button">
+        <!-- Botón circular para seleccionar de la galería -->
+        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="openFileSelector()">
+            <ion-icon name="image-outline"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+    
+        <!-- Botón de captura -->
+        <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+          <ion-fab-button color="danger" (click)="takePhoto()">
+            <ion-icon name="camera-outline"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+
+      </div>
+
+    <input #fileInput type="file" accept="image/*" hidden (change)="handleFileInput($event)">
+  </div>
 </ion-content>
+

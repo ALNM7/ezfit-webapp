@@ -1,6 +1,179 @@
+.main-container{
+  display: flex;
+  flex-direction: column;
+  background-color: #ffd356;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+.top{
+  gap: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.logo{
+  width: 200px;
+  height: auto;
+}
+.title{
+  text-align: center;
+  font-family: 'Poppins', 'Arial', sans-serif;
+  font-weight: bold;
+  color: #215637;
+  font-size: 45px;
+}
+
+.subtitle{
+  text-align: left;
+  font-family: 'Poppins', 'Arial', sans-serif;
+  color: #215637;
+  font-weight: 200;
+  font-size:20px ;
+  margin: 2%;
+ 
+}
+
+.form{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 70px;
+}
+
+.formulario{
+  padding: 20px 40px 20px 15px;
+  background: #fef9e3;
+  border-radius: 10px;
+  border: 2px solid #215637;
+  width: 100%;
+  margin: 0%;
+  align-items: center;
+  height: 50px;
+  color: #333;
+  align-items: center;
+ 
+  
+}
+input::placeholder{
+  color: #889e9c;
+  align-items: center;
+  justify-content: center;
+}
+
+input:focus {
+  outline: 2px solid #7dcb80; /* Cambia el color del borde de enfoque */
+
+}
+
+input:-webkit-autofill {
+  box-shadow: 0 0 0 1000px #ede0ac inset !important;
+  -webkit-text-fill-color: #000 !important; /* Texto negro o el color que quieras */
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+
+.password{
+  margin-top: 20px;
+  position: relative;
+  align-items: center;
+}
+.password-toggle {
+  position: absolute;
+  right: 15px; /* Ajusta la posición a la derecha dentro del input */
+  top: 70%; /* Centra verticalmente */
+  transform: translateY(-50%); /* Ajuste fino para centrar */
+  cursor: pointer; /* Hace que el icono sea clickeable */
+  color: #215637; /* Color del icono */
+  margin: auto;
+}
+
+.invalid-feedback {
+  color: #D9534F;
+  font-size: 15px;
+  text-align: left;
+  margin-top: 5px;
+  min-height: 20px; /* Define un espacio fijo para el mensaje de error */
+  visibility: hidden; /* Oculta el mensaje sin eliminar el espacio */
+}
+
+.invalid-feedback.show {
+  visibility: visible; /* Muestra el mensaje cuando haya un error */
+}
+
+.button{
+  display: block;
+  width: 100%;
+  height: 50px;
+  border-radius: 10px;
+  color: #faf4de;
+  background-color: #225436;
+  font-family: 'Arbo', sans-serif;
+  font-weight: bold;
+  font-size: 25px;
+  margin-top: 20px;
+}
+
+.button:active{
+    transform: scale(0.95);
+    box-shadow: #7dcb80;
+    background-color: #3a8357;
+}
+
+.register{
+  text-align: right;
+  font-family: 'Poppins', 'Arial';
+  color: #215637;
+  font-size:18px ;
+  margin: 2%;
+  font-weight: lighter;
+  margin-top: 40px;
+}
+
+.register a{
+  color: #215637;
+}
+
+
+
+
+
+
+
+
+.login-button {
+  display: block;
+  width: 100%;
+  font-weight: bold;
+  background: linear-gradient(45deg, #2196F3 0%, #64B5F6 100%);
+  color: #fff;
+  padding-block: 15px;
+  margin: 20px auto;
+  border-radius: 20px;
+  box-shadow: rgba(33, 150, 243, 0.87) 0px 20px 10px -15px;
+  border: none;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  transition: all 0.2s ease-in-out;
+}
+
+.input {
+  width: 100%;
+  background: #fff;
+  padding: 15px 20px 15px 45px; /* Más padding a la izquierda para el icono */
+  border-radius: 20px;
+  box-shadow: #64B5F6 0px 10px 10px -5px;
+  border: 2px solid transparent;
+  color: #333;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  transition: all 0.3s ease;
+  /* Se elimina el margin-top, ya que el contenedor se encarga del espaciado */
+}
 .container {
   max-width: 350px;
-  background: linear-gradient(0deg, #fff 0%, #f4f7fb 10%);
   border-radius: 40px;
   padding: 80px 35px;
   border: 5px solid #fff;
@@ -27,9 +200,7 @@
   font-family: 'Roboto', sans-serif;
 }
 
-.form {
-  margin-top: 20px;
-}
+
 
 .input-container {
   margin-top: 15px;
@@ -54,31 +225,9 @@
   pointer-events: none;
 }
 
-.password-toggle {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #64B5F6;
-  font-size: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  z-index: 2;
-}
 
-.input {
-  width: 100%;
-  background: #fff;
-  padding: 15px 20px 15px 45px; /* Más padding a la izquierda para el icono */
-  border-radius: 20px;
-  box-shadow: #64B5F6 0px 10px 10px -5px;
-  border: 2px solid transparent;
-  color: #333;
-  font-size: 16px;
-  font-family: 'Roboto', sans-serif;
-  transition: all 0.3s ease;
-  /* Se elimina el margin-top, ya que el contenedor se encarga del espaciado */
-}
+
+
 
 .input::placeholder {
   color: #64B5F6;
@@ -103,21 +252,6 @@
   font-family: 'Roboto', sans-serif;
 }
 
-.login-button {
-  display: block;
-  width: 100%;
-  font-weight: bold;
-  background: linear-gradient(45deg, #2196F3 0%, #64B5F6 100%);
-  color: #fff;
-  padding-block: 15px;
-  margin: 20px auto;
-  border-radius: 20px;
-  box-shadow: rgba(33, 150, 243, 0.87) 0px 20px 10px -15px;
-  border: none;
-  font-family: 'Roboto', sans-serif;
-  font-size: 16px;
-  transition: all 0.2s ease-in-out;
-}
 
 .login-button:hover {
   transform: scale(1.03);
@@ -129,10 +263,4 @@
   box-shadow: rgba(33, 150, 243, 0.87) 0px 15px 10px -10px;
 }
 
-.invalid-feedback {
-  color: red;
-  font-size: 14px;
-  text-align: center;
-  margin-top: 5px;
-  display: block;
-}
+

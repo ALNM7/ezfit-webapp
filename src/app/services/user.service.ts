@@ -79,7 +79,7 @@ export class UserService {
       }),
     };
   
-    return this.http.post<any>(`${environment.url_api}/food-analysis/`, data, httpOptionsWithAuth);
+    return this.http.post<any>(`${environment.url_api}/food`, data, httpOptionsWithAuth);
   }
 
 }

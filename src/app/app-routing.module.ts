@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { Tab3Page } from './screens/tab3/tab3.page';
 
 const routes: Routes = [
   {
@@ -13,7 +14,8 @@ const routes: Routes = [
   {
     path: 'register',
     loadChildren: () => import('./screens/register/register.module').then( m => m.RegisterPageModule)
-  }
+  },
+  
 ];
 @NgModule({
   imports: [

@@ -1,22 +1,54 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Detalles del alimento</ion-title>
+    <ion-title>Detalle del Escaneo</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div *ngIf="foodData">
+
+  <ng-container *ngIf="!loading && scan; else loadingTpl">
     <ion-card>
+      <ion-img [src]="fullImageUrl(scan.image)" alt="Imagen del alimento"></ion-img>
       <ion-card-header>
-        <ion-card-title>{{ foodData.name }}</ion-card-title>
+        <ion-card-title>{{ scan.food_name | titlecase }}</ion-card-title>
+        <ion-card-subtitle>Escaneado el {{ scan.timestamp | date:'fullDate' }}</ion-card-subtitle>
       </ion-card-header>
+
       <ion-card-content>
-        <p><strong>Calorías:</strong> {{ foodData.calories }}</p>
-        <p><strong>Carbohidratos:</strong> {{ foodData.carbohydrates }}</p>
-        <p><strong>Proteínas:</strong> {{ foodData.protein }}</p>
-        <p><strong>Grasas:</strong> {{ foodData.fat }}</p>
-        <!-- Agrega más campos según tu respuesta -->
+        <!-- Si tienes un objecto plano data con claves y valores -->
+        <ion-list *ngIf="scan.data">
+          <ion-item *ngFor="let key of Object.keys(scan.data)">
+            <ion-label>
+              {{ key | titlecase }}: {{ scan.data[key] }}
+            </ion-label>
+          </ion-item>
+        </ion-list>
+
+        <!-- O si usas analysis_data.totalNutrients -->
+        <ion-list *ngIf="scan.analysis_data">
+          <ion-item *ngFor="let key of getImportantNutrients()">
+            <ion-label>
+              <h2>{{ scan.analysis_data.nutritional_info.totalNutrients[key].label }}</h2>
+              <p>
+                {{ scan.analysis_data.nutritional_info.totalNutrients[key].quantity | number:'1.0-2' }}
+                {{ scan.analysis_data.nutritional_info.totalNutrients[key].unit }}
+        
+                <!-- Mostrar %DV si está disponible -->
+                <ng-container *ngIf="scan.analysis_data.nutritional_info.dailyIntakeReference[key]">
+                  &nbsp;–&nbsp;
+                  {{ scan.analysis_data.nutritional_info.dailyIntakeReference[key].percent | number:'1.0-1' }}% VD
+                </ng-container>
+              </p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+        
       </ion-card-content>
     </ion-card>
-  </div>
+  </ng-container>
+
+  <ng-template #loadingTpl>
+    <ion-spinner name="crescent" class="center-spinner"></ion-spinner>
+  </ng-template>
+
 </ion-content>

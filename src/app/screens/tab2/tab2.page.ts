@@ -1,78 +1,87 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
-import {
-  CameraPreview,
-  CameraPreviewOptions,
-  CameraPreviewPictureOptions
-} from '@capacitor-community/camera-preview';
-
-import {ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { NavController, LoadingController } from '@ionic/angular';
 import { UserService } from 'src/app/services/user.service';
-import { FacadeService } from 'src/app/services/facade.service';
 
 @Component({
   selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss'],
+  templateUrl: './tab2.page.html',
+  styleUrls: ['./tab2.page.scss'],
   standalone: false,
 })
-export class Tab2Page implements AfterViewInit{
-  @ViewChild('video', { static: false }) videoRef!: ElementRef;
-  @ViewChild('fileInput') fileInput!: ElementRef;
+export class Tab2Page implements AfterViewInit {
+  @ViewChild('video', { static: false }) videoRef!: ElementRef<HTMLVideoElement>;
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   isLoading = false;
+  capturedImage: string | null = null;
+  showFlash = false;
   private stream!: MediaStream;
+  private loadingOverlay: HTMLIonLoadingElement | null = null;
 
   constructor(
     private navCtrl: NavController,
     private userService: UserService,
-    private facadeService: FacadeService,
-
-
-  ) { }
-  
+    private loadingCtrl: LoadingController
+  ) {}
 
   ngAfterViewInit() {
+    //this.startCamera();
+  }
+
+  ionViewWillEnter() {
     this.startCamera();
   }
-
-  ionViewWillLeave() {
-    if (this.stream) {
-      this.stream.getTracks().forEach(track => track.stop());
-    }
-  }
   
-  async startCamera() {
-    const constraints = {
-      video: {
-        facingMode: 'environment',
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      }
-    };
+  ionViewWillLeave() {
+    // Detener cámara y limpiar el fotograma
+    this.stopCamera();
+    this.capturedImage = null;
+  }
 
+  private async startCamera() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      this.stopCamera(); // Detén cualquier stream anterior
+      this.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
       const video = this.videoRef.nativeElement;
-      video.srcObject = stream;
-    } catch (error) {
-      console.error('Error al acceder a la cámara:', error);
+      video.srcObject = this.stream;
+      await video.play();
+    } catch (e) {
+      console.error('Error al iniciar cámara:', e);
     }
   }
 
-  takePhoto() {
+  private stopCamera() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => {
+        track.stop();
+      });
+      this.stream = undefined as any;
+    }
+  }
+
+  async takePhoto() {
     const video = this.videoRef.nativeElement;
+    // Capturar fotograma
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(video, 0, 0);
+    // Mostrar imagen congelada y flash
+    this.capturedImage = canvas.toDataURL('image/jpeg');
+    this.showFlash = true;
+    setTimeout(() => this.showFlash = false, 200);
+    // Pausar cámara
+    this.stream.getTracks().forEach(t => t.enabled = false);
 
-    canvas.toBlob(async (blob) => {
-      if (blob) {
-        const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-        const compressedFile = await this.compressImage(file);
-        this.uploadImage(compressedFile);
-      }
+    // Convertir y comprimir
+    canvas.toBlob(async blob => {
+      if (!blob) return;
+      const originalSize = blob.size;
+      const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+      const compressed = await this.compressImage(file);
+      console.log(`Original: ${originalSize} bytes, Comprimido: ${compressed.size} bytes`);
+      this.uploadAndNavigate(compressed);
     }, 'image/jpeg', 0.9);
   }
 
@@ -82,74 +91,65 @@ export class Tab2Page implements AfterViewInit{
 
   async handleFileInput(event: any) {
     const file: File = event.target.files[0];
-    if (file) {
-      const compressedFile = await this.compressImage(file);
-      this.uploadImage(compressedFile);
-    }
+    if (!file) return;
+    this.capturedImage = URL.createObjectURL(file);
+    this.stream.getTracks().forEach(t => t.enabled = false);
+    const compressed = await this.compressImage(file);
+    console.log(`Galería original: ${file.size} bytes, Comprimado: ${compressed.size} bytes`);
+    this.uploadAndNavigate(compressed);
   }
 
-  async compressImage(file: File): Promise<File> {
-    const reader = new FileReader();
-    return new Promise<File>((resolve, reject) => {
-      reader.onload = (event: any) => {
+  private async compressImage(file: File): Promise<File> {
+    return new Promise<File>(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => {
         const img = new Image();
-        img.src = event.target.result;
+        img.src = (e.target as any).result;
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          let width = img.width;
-          let height = img.height;
-
           const max = 1024;
-          if (width > height && width > max) {
-            height = height * (max / width);
-            width = max;
-          } else if (height > max) {
-            width = width * (max / height);
-            height = max;
-          }
+          let w = img.width, h = img.height;
+          if (w > h && w > max) { h *= max / w; w = max; }
+          else if (h > max) { w *= max / h; h = max; }
 
-          canvas.width = width;
-          canvas.height = height;
-          ctx?.drawImage(img, 0, 0, width, height);
-
-          canvas.toBlob((blob) => {
-            if (blob) {
-              resolve(new File([blob], file.name, { type: file.type }));
-            } else {
-              reject(new Error('Error al comprimir.'));
-            }
-          }, file.type, 0.8);
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+          canvas.toBlob(b => resolve(new File([b!], file.name, { type: file.type })), file.type, 0.8);
         };
       };
       reader.readAsDataURL(file);
     });
   }
 
-  uploadImage(file: File) {
-    this.isLoading = true;
+  private async uploadAndNavigate(file: File) {
+    // Mostrar loading overlay
+    this.loadingOverlay = await this.loadingCtrl.create({
+      message: 'Analizando...',
+      spinner: 'crescent',
+      translucent: true,
+      cssClass: 'custom-loading'
+    });
+    await this.loadingOverlay.present();
 
-    const formData = new FormData();
-    formData.append('image', file);
-
-    this.userService.analyzeFood(formData).subscribe(
-      (response) => {
-        console.log('Respuesta del backend:', response);
-        this.isLoading = false;
-
-        // Redirige a la Tab 3 con los datos recibidos
-        this.navCtrl.navigateForward('/tabs/tab3', { state: { data: response } });
+    const form = new FormData();
+    form.append('image', file);
+    this.userService.analyzeFood(form).subscribe({
+      next: (res: any) => {
+        console.log('Respuesta del backend:', res);
+        const id = res?.data?.id ?? res?.id;
+    
+        if (id) {
+          this.navCtrl.navigateForward(['/tabs/detalle-scan', id]);
+        } else {
+          console.error('No se pudo extraer el ID del escaneo desde la respuesta:', res);
+        }
       },
-      (error) => {
-        console.error('Error subiendo imagen:', error);
-        this.isLoading = false;
+      error: err => {
+        console.error('Error al analizar:', err);
+      },
+      complete: () => {
+        this.loadingOverlay?.dismiss();
       }
-    );
+    });
   }
-
 }
-
-
-
-
-

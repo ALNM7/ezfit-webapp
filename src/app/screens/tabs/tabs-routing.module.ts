@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
+import { Tab3Page } from '../tab3/tab3.page';
 
 
 const routes: Routes = [
@@ -21,9 +22,16 @@ const routes: Routes = [
         loadChildren: () => import('../tab3/tab3.module').then(m => m.Tab3PageModule),
       },
       {
+        path: 'detalle-scan/:id',
+        loadChildren: () => import('../tab3/tab3.module').then(m => m.Tab3PageModule)
+      },
+      {
         path: '',
         redirectTo: 'tab1', // Redirección RELATIVA
         pathMatch: 'full',
+      },
+      {
+          path: 'detalle-scan/:id', component: Tab3Page, pathMatch: 'full' 
       }
     ]
   }

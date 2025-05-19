@@ -1,158 +1,126 @@
-import { Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { UserService } from 'src/app/services/user.service';
+import { Component, OnInit } from '@angular/core';
+import { NavController, ToastController } from '@ionic/angular';
+import { ScanService } from 'src/app/services/scan.service';
 import { FacadeService } from 'src/app/services/facade.service';
-import { NavController } from '@ionic/angular';
-
+import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
-  standalone: false,
+  standalone: false,  
 })
-export class Tab1Page  implements OnInit{
-  @ViewChild('fileInput') fileInput!: ElementRef;
-  public selectedFileName: string = '';
-  public token : string = "";
-  
-  ngOnInit(): void {
-
-    this.token = this.facadeService.getSessionToken();
-    console.log("Token obtenido:", this.token);
-  
-    if (!this.token) {
-      console.error("No se encontró un token, redirigiendo a login.");
-      this.navCtrl.navigateRoot('/register');
-    }
-  }
+export class Tab1Page implements OnInit {
+  scans: any[] = [];
+  currentPage = 1;
+  totalPages = 1;
+  loading = false;
+  public environment = environment;
 
   constructor(
-    private userService: UserService,
     private facadeService: FacadeService,
-    private navCtrl: NavController       
+    private scanService: ScanService,
+    private navCtrl: NavController,
+    private toastCtrl: ToastController,
+    private router: Router
   ) {}
 
+  ngOnInit() {
+    const token = this.facadeService.getSessionToken();
+    if (!token) {
+      this.router.navigate(['']);
+      return;
+    }
+    this.loadScans(1);
+  }
+  pageSize = 10;
+  loadScans(page: number = 1, append = false, event?: any) {
+    this.loading = true;
+    this.scanService.getScans(page).subscribe({
+      next: (res) => {
+        const newScans = Array.isArray(res)
+          ? res
+          : res.results || res.data || [];
   
-
-  async openCamera() {
-    try {
-      const image = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.Uri,
-        source: CameraSource.Camera,
-      });
-      console.log('Foto tomada:', image.webPath);
-      // Indicar que se tomó una foto desde la cámara
-      this.selectedFileName = 'Foto tomada desde cámara';
-      
-      const file = await this.convertWebPathToFile(image.webPath!);
-      const compressedFile = await this.compressImage(file);
-      this.uploadImage(compressedFile);
-    } catch (error) {
-      console.error('Error al tomar foto:', error);
+        this.totalPages = Math.ceil((res.count ?? newScans.length) / this.pageSize);
+  
+        if (append) {
+          this.scans = [...this.scans, ...newScans];
+        } else {
+          this.scans = newScans;
+        }
+  
+        this.currentPage = page;
+  
+        if (event) event.target.complete();
+      },
+      error: async () => {
+        if (event) event.target.complete();
+        const toast = await this.toastCtrl.create({
+          message: 'Error al cargar historial.',
+          duration: 2000,
+          color: 'danger',
+        });
+        await toast.present();
+      },
+      complete: () => {
+        this.loading = false;
+      },
+    });
+  }
+  
+  loadMore(event: any) {
+    if (this.currentPage < this.totalPages) {
+      this.loadScans(this.currentPage + 1, true, event);
+    } else {
+      event.target.disabled = true;
     }
   }
 
-  openFileSelector() {
-    this.fileInput.nativeElement.click();
+  /** Construye la URL completa de la imagen */
+  fullImageUrl(path: string): string {
+    return path.startsWith('http')
+      ? path
+      : `${this.environment.url_api}${path}`;
   }
 
-  async handleFileInput(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      // Actualiza el nombre del archivo seleccionado
-      this.selectedFileName = file.name;
-      console.log('Archivo seleccionado:', file);
-      const compressedFile = await this.compressImage(file);
-      this.uploadImage(compressedFile);
-    }
+  /** Abre la imagen en nueva pestaña */
+  openImage(url: string) {
+    window.open(url, '_blank');
   }
 
+  goToDetail(scan: any) {
+    this.navCtrl.navigateForward(['/tabs/detalle-scan', scan.id]);
 
+  }
 
-  // Método que comprime la imagen utilizando un canvas
-  compressImage(file: File): Promise<File> {
-    return new Promise<File>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event: any) => {
-        const img = new Image();
-        img.src = event.target.result;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 1024;
-          const MAX_HEIGHT = 1024;
-          let width = img.width;
-          let height = img.height;
-
-          // Redimensiona la imagen manteniendo la proporción
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = Math.round((height * MAX_WIDTH) / width);
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = Math.round((width * MAX_HEIGHT) / height);
-              height = MAX_HEIGHT;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-
-          // Función recursiva para generar el blob a una calidad dada
-          const generateBlob = (quality: number) => {
-            canvas.toBlob(
-              (blob) => {
-                if (blob) {
-                  // Si el blob supera 1MB y la calidad es mayor a 0.2, intenta reducir la calidad
-                  if (blob.size > 1024 * 1024 && quality > 0.2) {
-                    generateBlob(quality - 0.1);
-                  } else {
-                    resolve(new File([blob], file.name, { type: file.type }));
-                  }
-                } else {
-                  reject(new Error('Error al comprimir la imagen.'));
-                }
-              },
-              file.type,
-              quality
-            );
-          };
-
-          generateBlob(0.8);
-        };
-      };
-      reader.onerror = (error) => reject(error);
+  /** Maneja el refresher pull-to-refresh */
+  handleRefresh(event: any) {
+    this.currentPage = 1;
+    this.loadScans(1, false, event);
+    this.scanService.getScans(this.currentPage).subscribe({
+      next: (res) => {
+        this.scans = Array.isArray(res)
+          ? res
+          : res.results || res.data || [];
+        event.target.complete();
+      },
+      error: async () => {
+        event.target.complete();
+        const toast = await this.toastCtrl.create({
+          message: 'Error al refrescar.',
+          duration: 2000,
+          color: 'danger',
+        });
+        await toast.present();
+      },
     });
   }
 
-  // Método para convertir un webPath en un objeto File
-  async convertWebPathToFile(webPath: string): Promise<File> {
-    const response = await fetch(webPath);
-    const blob = await response.blob();
-    return new File([blob], 'camera_photo.jpg', { type: blob.type });
-  }
 
-  // Método para subir la imagen comprimida utilizando el servicio
-  uploadImage(file: File) {
-    const formData = new FormData();
-    formData.append('image', file, file.name);
-
-    // Llama al endpoint /food-analysis/ desde el servicio
-    this.userService.analyzeFood(formData).subscribe(
-      (response) => {
-        console.log('Respuesta del backend:', response);
-        // Aquí puedes procesar la respuesta, por ejemplo, mostrar los datos filtrados en la UI
-      },
-      (error) => {
-        console.error('Error subiendo imagen:', error);
-      }
-    );
+  goVerDetalle(scan: any) {
+    this.router.navigate(['/tabs/detalle-scan', scan.id]);
   }
+  
 }

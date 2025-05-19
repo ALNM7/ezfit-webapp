@@ -1,30 +1,42 @@
-<ion-content>
-  <div class="actions-container">
-    <ion-grid>
-      <ion-row class="ion-justify-content-center">
-        <!-- Botón Cámara -->
-        <ion-col size="6">
-          <ion-button class="action-button" expand="block" (click)="openCamera()">
-            <ion-icon name="camera-outline" slot="start"></ion-icon>
-            Tomar Foto
-          </ion-button>
-        </ion-col>
+<ion-content class="main-container">
 
-        <!-- Botón Upload File -->
-        <ion-col size="6">
-          <input #fileInput type="file" accept="image/*" hidden (change)="handleFileInput($event)">
-          <ion-button class="action-button" expand="block" (click)="openFileSelector()">
-            <ion-icon name="document-outline" slot="start"></ion-icon>
-            Subir Foto
-          </ion-button>
-        </ion-col>
-      </ion-row>
-      <!-- Mostrar el nombre del archivo seleccionado -->
-      <ion-row class="ion-justify-content-center" *ngIf="selectedFileName">
-        <ion-col size="12">
-          <p>Archivo seleccionado: {{ selectedFileName }}</p>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+  <!-- Refresher simple -->
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Título -->
+  <div class="top">
+    <h1 class="title">Historial de Escaneos</h1>
   </div>
+
+  <!-- Spinner si carga -->
+  <ion-spinner *ngIf="loading && scans.length === 0" name="crescent" class="center-spinner"></ion-spinner>
+
+  <!-- Tabla -->
+  <div *ngIf="!loading" class="scan-table">
+    <div class="scan-header">
+      <div>Imagen</div>
+      <div>Alimento</div>
+      <div>Fecha</div>
+    
+    </div>
+
+    <div *ngFor="let scan of scans" class="scan-row" (click)="goVerDetalle(scan)">
+      <div class="cell image-cell">
+        <ion-img [src]="fullImageUrl(scan.image)" [alt]="'Foto de ' + scan.food_name"></ion-img>
+      </div>
+
+      <div class="divider"> <h1></h1></div>
+      <div class="cell name-cell">{{ scan.food_name | titlecase }}</div>
+      <div class="cell date-cell">{{ scan.timestamp | date:'shortDate' }}</div>
+      
+    </div>
+  </div>
+
+  <!-- Infinite Scroll -->
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
 </ion-content>
